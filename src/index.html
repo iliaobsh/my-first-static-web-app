@@ -1,17 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
-</head>
+<script type="text/javascript">
+    function makeCall() {
+        var portNumber = document.getElementById("portNumber");
+        var callType = document.getElementById("callType");               
+        
+        var url = "";
+
+        if (callType.value == "http") {
+            url = `http://localhost:${portNumber.value}/receiveCall`;
+            const Http = new XMLHttpRequest();
+            Http.onreadystatechange = function () {
+                if (Http.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById("responseResult").innerHTML = Http.responseText;
+                }
+            }
+            Http.open("GET", url + "?message=Http request sent from Server1");
+            // Http.setHeader('Content-type', 'application/json');
+            //Http.setHeader('Access-Control-Allow-Origin', '*');
+            Http.send();
+        }
+        else if (callType.value == "https") {
+            url = `https://localhost:${portNumber.value}/receiveCall`;
+            const Http = new XMLHttpRequest();
+            Http.onreadystatechange = function () {
+                if (Http.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById("responseResult").innerHTML = Http.responseText;
+                }
+            }
+            Http.open("GET", url + "?message=Http request sent from Server1");            
+            Http.send();
+        }
+        else if (callType.value == "websocket") {            
+            url = `ws://localhost:${portNumber.value}`;
+            var webSocket = new WebSocket(url);            
+            webSocket.onopen = function (e) {
+                webSocket.send("WebSocket call sent From Server 1");
+                webSocket.onmessage = function (e) {
+                    document.getElementById("responseResult").innerHTML = e.data;                   
+                };
+            };
+
+
+        }
+        else if (callType.value == "websockets") {            
+            url = `wss://localhost:${portNumber.value}`;
+            var webSocket = new WebSocket(url);           
+            webSocket.onopen = function (e) {
+                webSocket.send("WebSocket call sent From Server 1");
+            };
+        }
+    }
+</script>
+
 
 <body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
+
+    <h1>Make a call to server 2</h1>
+    <p>Select Call type</p>
+    <select id="callType">
+        <option value="http">HTTP</option>
+        <option value="https">HTTPS</option>
+        <option value="websocket">WebSocket</option>
+        <option value="websockets">WebSocketS</option>
+    </select>
+    <div>port:</div>
+    <input id="portNumber" />
+    <button onclick="makeCall()">Make Call</button>
+    <p id="responseResult"></p>    
 </body>
 
 </html>
