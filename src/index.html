@@ -18,18 +18,20 @@
             }
             Http.open("GET", url + "?message=Http request sent from Server1");
             // Http.setHeader('Content-type', 'application/json');
-            //Http.setHeader('Access-Control-Allow-Origin', '*');
+            //Http.setRequestHeader('Access-Control-Allow-Origin', '*');
             Http.send();
         }
         else if (callType.value == "https") {
-            url = `https://localhost:${portNumber.value}/receiveCall`;
+            url = `https://localhost:${portNumber.value}/receiveCallSecure`;
             const Http = new XMLHttpRequest();
             Http.onreadystatechange = function () {
                 if (Http.readyState == XMLHttpRequest.DONE) {
                     document.getElementById("responseResult").innerHTML = Http.responseText;
                 }
             }
-            Http.open("GET", url + "?message=Http request sent from Server1");            
+            
+            Http.open("GET", url + "?message=Https request sent from Server1");   
+            //Http.setRequestHeader('Access-Control-Allow-Origin', '*');         
             Http.send();
         }
         else if (callType.value == "websocket") {            
@@ -41,15 +43,17 @@
                     document.getElementById("responseResult").innerHTML = e.data;                   
                 };
             };
-
-
         }
         else if (callType.value == "websockets") {            
             url = `wss://localhost:${portNumber.value}`;
             var webSocket = new WebSocket(url);           
             webSocket.onopen = function (e) {
-                webSocket.send("WebSocket call sent From Server 1");
+                webSocket.send("WebSocket Secure call sent From Server 1");
+                webSocket.onmessage = function (e) {
+                    document.getElementById("responseResult").innerHTML = e.data;                   
+                };
             };
+            
         }
     }
 </script>
@@ -66,9 +70,12 @@
         <option value="websockets">WebSocketS</option>
     </select>
     <div>port:</div>
-    <input id="portNumber" />
+    <input id="portNumber" />    
     <button onclick="makeCall()">Make Call</button>
+    <div>HTTP:9999</div>
+    <div>HTTPS:3001</div>
+    <div>WS:9998</div>
+    <div>WSS:8443</div>
     <p id="responseResult"></p>    
 </body>
-
 </html>
